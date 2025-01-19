@@ -1,7 +1,10 @@
 # Copyright Song Meo
 
 from __future__ import annotations
+
+import math
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass(frozen=True)
@@ -18,14 +21,15 @@ class GeoLocation:
     lat: float
     lon: float
 
-    def great_circle_distance(self, other: GeoLocation) -> float:
-        """Returns the arc length in meters"""
-        # TODO implement
-        return 0
+    def delivery_distance(self, other: GeoLocation) -> float:
+        """Returns the straight line distance in meters"""
+        x1, y1 = self.lat, self.lon
+        x2, y2 = other
+        return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
 @dataclass(frozen=True)
-class DistanceCluster:
+class DistanceRange:
     min_max: tuple[int, int]
     """[meter]"""
     coef: tuple[int, int]
@@ -49,4 +53,7 @@ class DeliveryOrderPrice:
 
 @dataclass(frozen=True)
 class Venue:
-    pass
+    coordinates: GeoLocation
+    order_minimum_no_surcharge: Money
+    base_price: Money
+    distance_ranges: List[DistanceRange]
