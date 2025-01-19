@@ -5,7 +5,9 @@ description = "Delivery Order Price Calculator Service is for calculating the pr
 authors = [
     { name = "Song Meo", email = "songmeo@pm.me" }
 ]
-dependencies = []
+dependencies = [
+    "fastapi>=0.115.6",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 
