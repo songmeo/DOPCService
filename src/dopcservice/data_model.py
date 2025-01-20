@@ -20,17 +20,21 @@ class Money:
 class GeoLocation:
     lat: float
     lon: float
+    RADIUS_OF_EARTH = 6378e3
 
     def get_great_arc_distance(self, other: GeoLocation) -> float:
-        # radius of the Earth (default is 637100 meters)
-        radius = 637100
-        # Convert latitude and longitude from degrees to radians
+        """
+        Returns distance in meters.
+        >>> loc1 = GeoLocation(59.451949, 24.726974)
+        >>> loc2 = GeoLocation(59.438150, 24.750183)
+        >>> round(loc1.get_great_arc_distance(loc2))
+        2021
+        """
         lat1, lon1, lat2, lon2 = map(radians, [self.lat, self.lon, other.lat, other.lon])
-        # Differences in coordinates
         delta_lat, delta_lon = lat2 - lat1, lon2 - lon1
         # Haversine formula
         a = sin(delta_lat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(delta_lon / 2) ** 2
-        return 2 * radius * atan2(sqrt(a), sqrt(1 - a))
+        return 2 * self.RADIUS_OF_EARTH * atan2(sqrt(a), sqrt(1 - a))
 
 
 @dataclass(frozen=True)
