@@ -2,7 +2,7 @@
 
 import requests
 
-from data_model import Venue, GeoLocation, Money, DistanceRange
+from .data_model import Venue, GeoLocation, Money, DistanceRange
 
 api_url = "https://consumer-api.development.dev.woltapi.com/home-assignment-api/v1/venues"
 venue_location = "home-assignment-venue-helsinki"
