@@ -3,17 +3,22 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
+from typing import Any
 from math import radians, sin, cos, sqrt, atan2
 
 
 @dataclass(frozen=True)
 class Money:
-    amount: int
+    amount: int = 0
     """
     Money in the lowest denomination of the local currency.
     In euro countries they are in cents, in Sweden they are in öre, and in Japan they are in yen.
     """
+
+    def __add__(self, other: Any) -> Money:
+        if isinstance(other, Money):
+            return Money(self.amount + other.amount)
+        return NotImplemented
 
 
 @dataclass(frozen=True)
@@ -39,22 +44,32 @@ class GeoLocation:
 
 @dataclass(frozen=True)
 class DistanceRange:
-    min_max: tuple[int, int]
-    """[meter]"""
-    coef: tuple[int, int]
-    """[cent], [cent/meter]"""
+    max: int | None
+    """
+    [meter]
+    The upper (exclusive) bound for the distance range.
+    If None, the delivery is not available for delivery distances equal or longer than the value of min.
+    """
+    constant: Money
+    multiplier: int
+    """[cent/meter]"""
+
+    def __post_init__(self) -> None:
+        if self.max <= 0:
+            raise ValueError(f"max cannot be zero")
+        # TODO: add more validators
 
 
 @dataclass(frozen=True)
 class DeliveryFee:
-    price: Money
-    distance: int
+    fee: Money
+    distance: float
     """[meter]"""
 
 
 @dataclass(frozen=True)
 class UserOrder:
-    coordinates: GeoLocation
+    location: GeoLocation
     venue_slug: str
     cart_value: Money
 
@@ -70,7 +85,7 @@ class DeliveryOrderPrice:
 @dataclass(frozen=True)
 class Venue:
     id: str
-    coordinates: GeoLocation
+    location: GeoLocation
     order_minimum_no_surcharge: Money
     base_price: Money
-    distance_ranges: List[DistanceRange]
+    distance_ranges: list[DistanceRange]

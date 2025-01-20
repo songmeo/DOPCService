@@ -2,7 +2,7 @@
 
 from abc import ABC
 
-from .data_model import Venue
+from data_model import Venue
 
 
 class VenueProvider(ABC):
