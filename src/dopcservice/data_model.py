@@ -55,8 +55,12 @@ class DistanceRange:
     """[cent/meter]"""
 
     def __post_init__(self) -> None:
-        if self.max <= 0:
+        if self.max is not None and self.max <= 0:
             raise ValueError(f"max cannot be zero")
+        if self.constant.amount < 0:
+            raise ValueError(f"added amount must not be smaller than zero")
+        if self.multiplier < 0:
+            raise ValueError(f"multiplier must not be smaller than zero")
         # TODO: add more validators
 
 
@@ -70,7 +74,6 @@ class DeliveryFee:
 @dataclass(frozen=True)
 class UserOrder:
     location: GeoLocation
-    venue_slug: str
     cart_value: Money
 
 
