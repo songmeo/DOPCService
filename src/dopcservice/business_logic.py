@@ -34,9 +34,10 @@ def compute_delivery_order_price(
     )
 
 
+# TODO: change pytest config to detect test starting with _
 def _test_business_logic() -> None:
     v = Venue(
-        id="pho-bar-helsinki",
+        id="pho-viet-helsinki",
         location=GeoLocation(lat=60.16771, lon=24.93664),
         order_minimum_no_surcharge=Money(1000),
         base_price=Money(190),
@@ -58,7 +59,7 @@ def _test_business_logic() -> None:
 
 def _test_business_logic_user_too_far() -> None:
     v = Venue(
-        id="pho-bar-helsinki",
+        id="pho-viet-helsinki",
         location=GeoLocation(lat=60.16771, lon=24.93664),
         order_minimum_no_surcharge=Money(1000),
         base_price=Money(190),
