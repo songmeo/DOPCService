@@ -1,5 +1,3 @@
-# Copyright Song Meo
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -27,12 +25,12 @@ class GeoLocation:
     lon: float
     RADIUS_OF_EARTH = 6378e3
 
-    def get_great_arc_distance(self, other: GeoLocation) -> float:
+    def get_great_circle_distance(self, other: GeoLocation) -> float:
         """
         Returns distance in meters.
         >>> loc1 = GeoLocation(59.451949, 24.726974)
         >>> loc2 = GeoLocation(59.438150, 24.750183)
-        >>> round(loc1.get_great_arc_distance(loc2))
+        >>> round(loc1.get_great_circle_distance(loc2))
         2021
         """
         lat1, lon1, lat2, lon2 = map(radians, [self.lat, self.lon, other.lat, other.lon])
@@ -69,7 +67,6 @@ class DistanceRange:
             raise ValueError(f"added amount must not be smaller than zero")
         if self.multiplier < 0:
             raise ValueError(f"multiplier must not be smaller than zero")
-        # TODO: add more validators
 
 
 @dataclass(frozen=True)
