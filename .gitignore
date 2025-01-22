@@ -5,8 +5,7 @@ dist/
 wheels/
 *.egg-info
 .idea/
-
+.python-version
 *.lock
 .venv
-
 .nox

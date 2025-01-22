@@ -18,11 +18,6 @@ build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
-dev-dependencies = [
-    "pytest~=8.3",
-    "coverage~=7.6.10",
-    "mypy~=1.14.1",
-]
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -40,13 +35,14 @@ include = '''
 '''
 # --------------------------------------------------  PYTEST  --------------------------------------------------
 [tool.pytest.ini_options]
-testpaths = "src/"
+testpaths = ["src/", "test/"]
 python_files = "*.py"
+python_functions = "_test_*"
 log_level = "DEBUG"
 log_cli_level = "WARNING"
 log_cli = true
 log_file = "pytest.log"
-addopts = "--doctest-modules -v --ignore=noxfile.py"
+addopts = "--doctest-modules -v"
 
 # -------------------------------------------------- COVERAGE --------------------------------------------------
 [tool.coverage.run]

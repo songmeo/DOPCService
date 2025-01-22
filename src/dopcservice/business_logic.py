@@ -1,4 +1,4 @@
-from data_model import Money, DeliveryOrderPrice, DeliveryFee, GeoLocation, Venue, DistanceRange
+from .data_model import Money, DeliveryOrderPrice, DeliveryFee, GeoLocation, Venue, DistanceRange
 
 
 def compute_delivery_order_price(

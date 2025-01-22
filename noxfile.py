@@ -23,7 +23,7 @@ def clean(session: nox.Session) -> None:
 @nox.session(reuse_venv=True)
 def mypy(session: nox.Session) -> None:
     session.install("-e", ".")
-    session.install("mypy ~= 1.14")
+    session.install("mypy ~= 1.14", "types-requests")
     session.run("mypy", "src/")
 
 

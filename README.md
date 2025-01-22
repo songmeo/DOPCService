@@ -11,7 +11,9 @@ Run nox to install dependencies and run tests:
 ```commandline
 nox
 ```
-_That's it!_
+_That's it! :3_
+
+> *TODO remove unnecessary documentation*
 
 ---
 ## Available Commands
