@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
-from math import radians, sin, cos, sqrt, atan2
+from math import radians, sin, cos, sqrt, atan2, isfinite
 
 
 @dataclass(frozen=True)
@@ -41,6 +41,14 @@ class GeoLocation:
         a = sin(delta_lat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(delta_lon / 2) ** 2
         return 2 * self.RADIUS_OF_EARTH * atan2(sqrt(a), sqrt(1 - a))
 
+    def __post_init__(self) -> None:
+        if not isfinite(self.lat) or not isfinite(self.lon):
+            raise ValueError("lat/lon must be finite")
+        if not -90 <= self.lat <= 90:
+            raise ValueError(f"Invalid latitude: {self.lat}")
+        if not -180 <= self.lon <= 180:
+            raise ValueError(f"Invalid longitude: {self.lon}")
+
 
 @dataclass(frozen=True)
 class DistanceRange:
@@ -55,8 +63,12 @@ class DistanceRange:
     """[cent/meter]"""
 
     def __post_init__(self) -> None:
-        if self.max <= 0:
+        if self.max is not None and self.max <= 0:
             raise ValueError(f"max cannot be zero")
+        if self.constant.amount < 0:
+            raise ValueError(f"added amount must not be smaller than zero")
+        if self.multiplier < 0:
+            raise ValueError(f"multiplier must not be smaller than zero")
         # TODO: add more validators
 
 
@@ -70,7 +82,6 @@ class DeliveryFee:
 @dataclass(frozen=True)
 class UserOrder:
     location: GeoLocation
-    venue_slug: str
     cart_value: Money
 
 
