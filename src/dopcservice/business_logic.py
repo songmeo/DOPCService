@@ -1,5 +1,4 @@
 from data_model import Money, DeliveryOrderPrice, DeliveryFee, GeoLocation, Venue, DistanceRange
-import pytest
 
 
 def compute_delivery_order_price(
@@ -7,6 +6,12 @@ def compute_delivery_order_price(
     cart_value: Money,
     user_location: GeoLocation,
 ) -> DeliveryOrderPrice | None:
+    """
+    Small_order_surcharge is the difference between order_minimum_no_surcharge and the cart value.
+    Delivery fee can be calculated with: base_price + a + b * distance / 10.
+    Total price is the sum of cart value, small order surcharge, and delivery fee.
+    The order of the objects inside distance_ranges is sorted by min.
+    """
     order_minimum_no_surcharge = venue.order_minimum_no_surcharge
     distance_ranges = venue.distance_ranges
     base_price = venue.base_price
@@ -34,8 +39,24 @@ def compute_delivery_order_price(
     )
 
 
+def _test_business_logic_empty_distance_range() -> None:
+    v = Venue(
+        id="pho-viet-helsinki",
+        location=GeoLocation(lat=60.16771, lon=24.93664),
+        order_minimum_no_surcharge=Money(1000),
+        base_price=Money(190),
+        distance_ranges=[],
+    )
+    cart_value = Money(1000)
+    user_location = GeoLocation(lat=60.189714, lon=24.838463)
+    delivery_order_price = compute_delivery_order_price(venue=v, cart_value=cart_value, user_location=user_location)
+    assert delivery_order_price is None
+
+
 # TODO: change pytest config to detect test starting with _
 def _test_business_logic() -> None:
+    import pytest
+
     v = Venue(
         id="pho-viet-helsinki",
         location=GeoLocation(lat=60.16771, lon=24.93664),
