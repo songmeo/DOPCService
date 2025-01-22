@@ -24,7 +24,7 @@ def clean(session: nox.Session) -> None:
 def mypy(session: nox.Session) -> None:
     session.install("-e", ".")
     session.install("mypy ~= 1.14")
-    session.run("mypy", "src/")  # TODO why can't i use . here
+    session.run("mypy", "src/")
 
 
 @nox.session(reuse_venv=True)

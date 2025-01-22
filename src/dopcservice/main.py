@@ -2,7 +2,7 @@ from typing import Union
 from fastapi import FastAPI
 
 import requests
-from src.dopcservice.data_model import Venue, GeoLocation, Money, DistanceRange
+from data_model import Venue, GeoLocation, Money, DistanceRange
 
 
 app = FastAPI()
