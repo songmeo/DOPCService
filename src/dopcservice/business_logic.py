@@ -17,7 +17,7 @@ def compute_delivery_order_price(
     base_price = venue.base_price
 
     small_order_surcharge = Money(max(order_minimum_no_surcharge.amount - cart_value.amount, 0))
-    distance = venue.location.get_great_arc_distance(user_location)
+    distance = venue.location.get_great_circle_distance(user_location)
     rng: DistanceRange | None = None
     for r in distance_ranges:
         if r.max is None:
@@ -72,6 +72,7 @@ def _test_business_logic() -> None:
     cart_value = Money(1000)
     user_location = GeoLocation(lat=60.189714, lon=24.838463)
     delivery_order_price = compute_delivery_order_price(venue=v, cart_value=cart_value, user_location=user_location)
+    assert delivery_order_price is not None
     assert delivery_order_price.total_price == Money(2882)
     assert delivery_order_price.small_order_surcharge == Money(0)
     assert delivery_order_price.delivery.fee == Money(1882)

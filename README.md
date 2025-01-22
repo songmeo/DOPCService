@@ -1,15 +1,41 @@
 # Delivery Order Price Calculator service (DOPC)
 
-## Installation
+## Quick Start
+Install Nox:
 
-## Running
+```commandline
+pip install nox
+```
 
-## Run test
-To run tests, do this: `pytest --doctest-modules`
-## TODO: add a noxfile with a test session in it.
-Example: https://github.com/Zubax/jafit/blob/8dfd06c24d2e07d11ce0db1bb2c30566ec8a4b4f/noxfile.py#L55
+Run nox to install dependencies and run tests:
+```commandline
+nox
+```
+_That's it!_
 
-### run doctest
-`rye run pytest --doctest-modules src/dopcservice/data_model.py`
+---
+## Available Commands
 
-## Edge case
+You can run specific tasks using Nox sessions:
+
+Run tests:
+
+```commandline
+nox -s tests
+```
+
+Check code style (linting):
+```commandline
+nox -s lint
+```
+
+Run type checks:
+```commandline
+nox -s mypy
+```
+
+Clean up Nox environments:
+```commandline
+nox --clean
+```
+
