@@ -6,6 +6,7 @@ import nox
 BYPRODUCTS = [".coverage*", "*.log"]
 
 
+# nox -s clean
 @nox.session(python=False)
 def clean(session: nox.Session) -> None:
     for w in BYPRODUCTS:
@@ -20,6 +21,7 @@ def clean(session: nox.Session) -> None:
                 session.error(f"Failed to remove {f}: {ex}")
 
 
+# nox -s mypy
 @nox.session(reuse_venv=True)
 def mypy(session: nox.Session) -> None:
     session.install("-e", ".")
@@ -27,12 +29,14 @@ def mypy(session: nox.Session) -> None:
     session.run("mypy", "src/")
 
 
+# nox -s black
 @nox.session(reuse_venv=True)
 def black(session: nox.Session) -> None:
     session.install("black ~= 24.10")
     session.run("black", "--check", ".")
 
 
+# nox -s tests
 @nox.session(reuse_venv=True)
 def test(session: nox.Session) -> None:
     session.install("-e", ".")

@@ -22,10 +22,6 @@ def read_item(item_id: int, q: Union[str, None] = None) -> dict[str, Any]:
     return {"item_id": item_id, "q": q}
 
 
-static_response = requests.get(static_api)
-dynamic_response = requests.get(dynamic_api)
-
-
 def get_venue(venue_id: str) -> Venue:
     static_venue = requests.get(static_api).json().venue_raw
     dynamic_venue = requests.get(dynamic_api).json().venue_raw
@@ -39,3 +35,6 @@ def get_venue(venue_id: str) -> Venue:
     for r in distance_ranges_raw:
         distance_ranges.append(DistanceRange(max=r.max, constant=r.a, multiplier=r.b))
     return Venue(venue_id, coordinates, order_minimum_no_surcharge, base_price, distance_ranges)
+
+
+# TODO: WRITE TEST FOR get_venue()

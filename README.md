@@ -13,31 +13,4 @@ nox
 ```
 _That's it! :3_
 
-> *TODO remove unnecessary documentation*
-
----
-## Available Commands
-
-You can run specific tasks using Nox sessions:
-
-Run tests:
-
-```commandline
-nox -s tests
-```
-
-Check code style (linting):
-```commandline
-nox -s lint
-```
-
-Run type checks:
-```commandline
-nox -s mypy
-```
-
-Clean up Nox environments:
-```commandline
-nox --clean
-```
-
+Please check `noxfile.py` for more available commands.
