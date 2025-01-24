@@ -19,8 +19,8 @@ async def fetch_venue(venue_slug: str) -> Venue:
     dynamic_venue_raw = (await loop.run_in_executor(None, requests.get, dynamic_api)).json().get("venue_raw")
 
     coordinates = GeoLocation(
-        lon=static_venue_raw.get("location").get("coordinates")[0],
-        lat=static_venue_raw.get("location").get("coordinates")[1],
+        lon=static_venue_raw["location"]["coordinates"][0],
+        lat=static_venue_raw["location"]["coordinates"][1],
     )
     delivery_specs = dynamic_venue_raw["delivery_specs"]
     order_minimum_no_surcharge = Money(delivery_specs["order_minimum_no_surcharge"])
