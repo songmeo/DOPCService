@@ -43,6 +43,7 @@ log_cli_level = "WARNING"
 log_cli = true
 log_file = "pytest.log"
 addopts = "--doctest-modules -v"
+asyncio_mode = "auto"
 
 # -------------------------------------------------- COVERAGE --------------------------------------------------
 [tool.coverage.run]

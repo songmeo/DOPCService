@@ -44,6 +44,7 @@ def test(session: nox.Session) -> None:
 
     # Run pytest with coverage
     session.install("pytest ~= 8.3")
+    session.install("pytest-asyncio ~= 0.23")
     session.run("coverage", "run", "-m", "pytest")
 
     # Generate coverage report

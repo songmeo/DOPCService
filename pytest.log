@@ -1,4 +1,7 @@
-DEBUG    urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): consumer-api.development.dev.woltapi.com:443
-DEBUG    urllib3.connectionpool:connectionpool.py:544 https://consumer-api.development.dev.woltapi.com:443 "GET /home-assignment-api/v1/venues/home-assignment-venue-helsinki/dynamic HTTP/1.1" 200 1765
+DEBUG    asyncio:selector_events.py:64 Using selector: KqueueSelector
+DEBUG    asyncio:selector_events.py:64 Using selector: KqueueSelector
 DEBUG    urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): consumer-api.development.dev.woltapi.com:443
 DEBUG    urllib3.connectionpool:connectionpool.py:544 https://consumer-api.development.dev.woltapi.com:443 "GET /home-assignment-api/v1/venues/home-assignment-venue-helsinki/static HTTP/1.1" 200 None
+DEBUG    urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): consumer-api.development.dev.woltapi.com:443
+DEBUG    urllib3.connectionpool:connectionpool.py:544 https://consumer-api.development.dev.woltapi.com:443 "GET /home-assignment-api/v1/venues/home-assignment-venue-helsinki/dynamic HTTP/1.1" 200 1766
+DEBUG    asyncio:selector_events.py:64 Using selector: KqueueSelector

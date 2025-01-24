@@ -41,7 +41,7 @@ def compute_delivery_order_price(
 
 def _test_business_logic_empty_distance_range() -> None:
     v = Venue(
-        id="pho-viet-helsinki",
+        slug="pho-viet-helsinki",
         location=GeoLocation(lat=60.16771, lon=24.93664),
         order_minimum_no_surcharge=Money(1000),
         base_price=Money(190),
@@ -53,12 +53,11 @@ def _test_business_logic_empty_distance_range() -> None:
     assert delivery_order_price is None
 
 
-# TODO: change pytest config to detect test starting with _
 def _test_business_logic() -> None:
     import pytest
 
     v = Venue(
-        id="pho-viet-helsinki",
+        slug="pho-viet-helsinki",
         location=GeoLocation(lat=60.16771, lon=24.93664),
         order_minimum_no_surcharge=Money(1000),
         base_price=Money(190),
@@ -81,7 +80,7 @@ def _test_business_logic() -> None:
 
 def _test_business_logic_user_too_far() -> None:
     v = Venue(
-        id="pho-viet-helsinki",
+        slug="pho-viet-helsinki",
         location=GeoLocation(lat=60.16771, lon=24.93664),
         order_minimum_no_surcharge=Money(1000),
         base_price=Money(190),

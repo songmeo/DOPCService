@@ -92,7 +92,7 @@ class DeliveryOrderPrice:
 
 @dataclass(frozen=True)
 class Venue:
-    id: str
+    slug: str
     location: GeoLocation
     order_minimum_no_surcharge: Money
     base_price: Money
