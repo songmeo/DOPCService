@@ -1,29 +1,22 @@
 import asyncio
 import requests
-from typing import Any
 
 from fastapi import FastAPI
-from .data_model import Venue, GeoLocation, Money, DistanceRange, DeliveryOrderPrice
+from .data_model import Venue, GeoLocation, Money, DistanceRange
 
 app = FastAPI()
 
-api_url = "https://consumer-api.development.dev.woltapi.com/home-assignment-api/v1/venues"
+VENUE_SOURCE_URL = "https://consumer-api.development.dev.woltapi.com/home-assignment-api/v1/venues"
 
 
 async def fetch_venue(venue_slug: str) -> Venue:
-    static_api = f"{api_url}/{venue_slug}/static"
-    dynamic_api = f"{api_url}/{venue_slug}/dynamic"
+    static_api = f"{VENUE_SOURCE_URL}/{venue_slug}/static"
+    dynamic_api = f"{VENUE_SOURCE_URL}/{venue_slug}/dynamic"
 
     loop = asyncio.get_running_loop()  # gain access to the scheduler
 
-    def fetch_static_venue_raw() -> Any:
-        return requests.get(static_api).json().get("venue_raw")
-
-    def fetch_dynamic_venue_raw() -> Any:
-        return requests.get(dynamic_api).json().get("venue_raw")
-
-    static_venue_raw = await loop.run_in_executor(None, fetch_static_venue_raw)
-    dynamic_venue_raw = await loop.run_in_executor(None, fetch_dynamic_venue_raw)
+    static_venue_raw = (await loop.run_in_executor(None, requests.get, static_api)).json().get("venue_raw")
+    dynamic_venue_raw = (await loop.run_in_executor(None, requests.get, dynamic_api)).json().get("venue_raw")
 
     coordinates = GeoLocation(
         lon=static_venue_raw.get("location").get("coordinates")[0],
@@ -49,10 +42,13 @@ async def fetch_venue(venue_slug: str) -> Venue:
 
 
 async def _test_fetch_venue() -> None:
+    import pytest
+
     venue_slug = "home-assignment-venue-helsinki"
     venue = await fetch_venue(venue_slug)
     assert venue.slug == "home-assignment-venue-helsinki"
-    assert venue.location == GeoLocation(lat=60.17012143, lon=24.92813512)
+    assert venue.location.lat == pytest.approx(60.17012143)
+    assert venue.location.lon == pytest.approx(24.92813512)
     assert venue.order_minimum_no_surcharge == Money(1000)
     assert venue.base_price == Money(190)
     assert venue.distance_ranges == [
