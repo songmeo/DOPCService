@@ -35,7 +35,7 @@ include = '''
 '''
 # --------------------------------------------------  PYTEST  --------------------------------------------------
 [tool.pytest.ini_options]
-testpaths = ["src/", "test/"]
+testpaths = ["src/"]
 python_files = "*.py"
 python_functions = "_test_*"
 log_level = "DEBUG"

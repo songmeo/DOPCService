@@ -2,11 +2,23 @@ import asyncio
 import requests
 
 from fastapi import FastAPI
-from .data_model import Venue, GeoLocation, Money, DistanceRange
+from .data_model import Venue, GeoLocation, Money, DistanceRange, DeliveryOrderPrice, DeliveryFee
+from .business_logic import compute_delivery_order_price
 
 app = FastAPI()
 
 VENUE_SOURCE_URL = "https://consumer-api.development.dev.woltapi.com/home-assignment-api/v1/venues"
+
+
+@app.get("/api/v1/delivery-order-price?venue_slug={venue_slug}&cart_value={cart_value}&user_lat={lat}&user_lon={lon}")
+async def get_delivery_order_price(
+    venue_slug: str, cart_value: int, lat: float, lon: float
+) -> DeliveryOrderPrice | None:
+    venue = await fetch_venue(venue_slug)
+    delivery_order_price = compute_delivery_order_price(
+        venue=venue, cart_value=Money(cart_value), user_location=GeoLocation(lat=lat, lon=lon)
+    )
+    return delivery_order_price
 
 
 async def fetch_venue(venue_slug: str) -> Venue:
