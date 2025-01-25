@@ -17,7 +17,7 @@ async def get_delivery_order_price(
     venue_slug: str, cart_value: int, user_lat: float, user_lon: float, response: Response
 ) -> dict[str, object]:
     venue = await fetch_venue(venue_slug)
-    if not venue:
+    if venue is None:
         response.status_code = 404
         return {"error": "Venue not found."}
     dop = compute_delivery_order_price(
@@ -26,6 +26,9 @@ async def get_delivery_order_price(
     if dop is None:
         response.status_code = 418
         return {"error": "The user is too far from the venue."}
+    # Another potential issue is that the venue source API may return data that doesn't conform to the expected schema,
+    # such as missing required fields. In such cases, FastAPI will respond with a 500 Internal Server Error,
+    # which is semantically correct.
     return {
         "total_price": dop.total_price.amount,
         "small_order_surcharge": dop.small_order_surcharge.amount,
