@@ -1,4 +1,6 @@
 import asyncio
+from typing import Any
+
 import requests
 
 from fastapi import FastAPI, Response
@@ -71,20 +73,29 @@ async def _test_get_delivery_order_price_client_too_far() -> None:
     assert response.json() == {"error": "The user is too far from the venue."}
 
 
+async def fetch_venue_raw(api_url: str) -> Any:
+    loop = asyncio.get_running_loop()  # gain access to the scheduler
+
+    response = await loop.run_in_executor(None, requests.get, api_url)
+    venue_raw = response.json().get("venue_raw")
+
+    if response.status_code != 200 or venue_raw is None:
+        return None
+    return venue_raw
+
+
 async def fetch_venue(venue_slug: str) -> Venue | None:
     static_api = f"{VENUE_SOURCE_URL}/{venue_slug}/static"
     dynamic_api = f"{VENUE_SOURCE_URL}/{venue_slug}/dynamic"
 
-    loop = asyncio.get_running_loop()  # gain access to the scheduler
+    static_venue_raw = await fetch_venue_raw(static_api)
 
-    response = await loop.run_in_executor(None, requests.get, static_api)
-    static_venue_raw = response.json().get("venue_raw")
-    if response.status_code != 200 or static_venue_raw is None:
+    if static_venue_raw is None:
         return None
 
-    response = await loop.run_in_executor(None, requests.get, dynamic_api)
-    dynamic_venue_raw = response.json().get("venue_raw")
-    if response.status_code != 200 or dynamic_venue_raw is None:
+    dynamic_venue_raw = await fetch_venue_raw(dynamic_api)
+
+    if dynamic_venue_raw is None:
         return None
 
     coordinates = GeoLocation(

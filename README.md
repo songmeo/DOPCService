@@ -19,3 +19,5 @@ nox -s server
 _That's it! :3_
 
 Please check `noxfile.py` for more available commands.
+
+# TODO: make sure this could be run without Rye
