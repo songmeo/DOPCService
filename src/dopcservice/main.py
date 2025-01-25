@@ -1,7 +1,7 @@
 import asyncio
 import requests
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from .data_model import Venue, GeoLocation, Money, DistanceRange
 from .business_logic import compute_delivery_order_price
 
@@ -10,18 +10,20 @@ app = FastAPI()
 VENUE_SOURCE_URL = "https://consumer-api.development.dev.woltapi.com/home-assignment-api/v1/venues"
 
 
-@app.get("/api/v1/delivery-order-price")
+@app.get("/api/v1/delivery-order-price", status_code=200)
 async def get_delivery_order_price(
-    venue_slug: str, cart_value: int, user_lat: float, user_lon: float
+    venue_slug: str, cart_value: int, user_lat: float, user_lon: float, response: Response
 ) -> dict[str, object]:
     venue = await fetch_venue(venue_slug)
     if not venue:
-        return {"status": "404", "error": "Invalid venue."}
+        response.status_code = 404
+        return {"error": "Venue not found."}
     dop = compute_delivery_order_price(
         venue=venue, cart_value=Money(cart_value), user_location=GeoLocation(lat=user_lat, lon=user_lon)
     )
     if dop is None:
-        return {"status": "404", "error": "Delivery isn't possible."}
+        response.status_code = 422
+        return {"error": "The user is too far from the venue."}
     return {
         "total_price": dop.total_price.amount,
         "small_order_surcharge": dop.small_order_surcharge.amount,
@@ -45,6 +47,28 @@ async def _test_get_delivery_order_price() -> None:
         "cart_value": 1000,
         "delivery": {"fee": 190, "distance": 177},
     }
+
+
+async def _test_get_delivery_order_price_venue_not_found() -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(app)
+    response = client.get(
+        "/api/v1/delivery-order-price?venue_slug=not_found_venue&cart_value=1000&user_lat=60.17094&user_lon=24.93087"
+    )
+    assert response.status_code == 404
+    assert response.json() == {"error": "Venue not found."}
+
+
+async def _test_get_delivery_order_price_client_too_far() -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(app)
+    response = client.get(
+        "/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000&user_lat=80&user_lon=82"
+    )
+    assert response.status_code == 422
+    assert response.json() == {"error": "The user is too far from the venue."}
 
 
 async def fetch_venue(venue_slug: str) -> Venue | None:
