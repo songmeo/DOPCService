@@ -24,7 +24,7 @@ async def get_delivery_order_price(
         venue=venue, cart_value=Money(cart_value), user_location=GeoLocation(lat=user_lat, lon=user_lon)
     )
     if dop is None:
-        response.status_code = 422
+        response.status_code = 418
         return {"error": "The user is too far from the venue."}
     return {
         "total_price": dop.total_price.amount,
@@ -32,45 +32,6 @@ async def get_delivery_order_price(
         "cart_value": dop.cart_value.amount,
         "delivery": {"fee": dop.delivery.fee.amount, "distance": dop.delivery.distance},
     }
-
-
-async def _test_get_delivery_order_price() -> None:
-    from fastapi.testclient import TestClient
-
-    client = TestClient(app)
-    response = client.get(
-        "/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000"
-        "&user_lat=60.17094&user_lon=24.93087"
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "total_price": 1190,
-        "small_order_surcharge": 0,
-        "cart_value": 1000,
-        "delivery": {"fee": 190, "distance": 177},
-    }
-
-
-async def _test_get_delivery_order_price_venue_not_found() -> None:
-    from fastapi.testclient import TestClient
-
-    client = TestClient(app)
-    response = client.get(
-        "/api/v1/delivery-order-price?venue_slug=not_found_venue&cart_value=1000&user_lat=60.17094&user_lon=24.93087"
-    )
-    assert response.status_code == 404
-    assert response.json() == {"error": "Venue not found."}
-
-
-async def _test_get_delivery_order_price_client_too_far() -> None:
-    from fastapi.testclient import TestClient
-
-    client = TestClient(app)
-    response = client.get(
-        "/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000&user_lat=80&user_lon=82"
-    )
-    assert response.status_code == 422
-    assert response.json() == {"error": "The user is too far from the venue."}
 
 
 async def fetch_venue_raw(api_url: str) -> dict[str, Any] | None:
@@ -81,7 +42,7 @@ async def fetch_venue_raw(api_url: str) -> dict[str, Any] | None:
 
     if response.status_code != 200 or venue_raw is None:
         return None
-    return venue_raw
+    return venue_raw  # type: ignore
 
 
 async def fetch_venue(venue_slug: str) -> Venue | None:
@@ -119,6 +80,45 @@ async def fetch_venue(venue_slug: str) -> Venue | None:
         base_price=base_price,
         distance_ranges=distance_ranges,
     )
+
+
+async def _test_get_delivery_order_price() -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(app)
+    response = client.get(
+        "/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000"
+        "&user_lat=60.17094&user_lon=24.93087"
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "total_price": 1190,
+        "small_order_surcharge": 0,
+        "cart_value": 1000,
+        "delivery": {"fee": 190, "distance": 177},
+    }
+
+
+async def _test_get_delivery_order_price_venue_not_found() -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(app)
+    response = client.get(
+        "/api/v1/delivery-order-price?venue_slug=not_found_venue&cart_value=1000&user_lat=60.17094&user_lon=24.93087"
+    )
+    assert response.status_code == 404
+    assert response.json() == {"error": "Venue not found."}
+
+
+async def _test_get_delivery_order_price_client_too_far() -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(app)
+    response = client.get(
+        "/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000&user_lat=80&user_lon=82"
+    )
+    assert response.status_code == 418
+    assert response.json() == {"error": "The user is too far from the venue."}
 
 
 async def _test_fetch_venue_not_found() -> None:
