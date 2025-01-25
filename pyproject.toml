@@ -6,7 +6,7 @@ authors = [
     { name = "Huong Pham", email = "songhuong.phamthi@gmail.com" }
 ]
 dependencies = [
-    "fastapi~=0.115.6",
+    "fastapi[standard]>=0.115.7",
     "requests~=2.32",
 ]
 readme = "README.md"

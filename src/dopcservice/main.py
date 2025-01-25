@@ -1,7 +1,4 @@
 import asyncio
-from http.client import HTTPException
-from typing import Dict, Any
-
 import requests
 
 from fastapi import FastAPI
@@ -13,13 +10,15 @@ app = FastAPI()
 VENUE_SOURCE_URL = "https://consumer-api.development.dev.woltapi.com/home-assignment-api/v1/venues"
 
 
-@app.get("/api/v1/delivery-order-price?venue_slug={venue_slug}&cart_value={cart_value}&user_lat={lat}&user_lon={lon}")
-async def get_delivery_order_price(venue_slug: str, cart_value: int, lat: float, lon: float) -> dict[str, object]:
+@app.get("/api/v1/delivery-order-price")
+async def get_delivery_order_price(
+    venue_slug: str, cart_value: int, user_lat: float, user_lon: float
+) -> dict[str, object]:
     venue = await fetch_venue(venue_slug)
     if not venue:
         return {"status": "404", "error": "Invalid venue."}
     dop = compute_delivery_order_price(
-        venue=venue, cart_value=Money(cart_value), user_location=GeoLocation(lat=lat, lon=lon)
+        venue=venue, cart_value=Money(cart_value), user_location=GeoLocation(lat=user_lat, lon=user_lon)
     )
     if dop is None:
         return {"status": "404", "error": "Delivery isn't possible."}
@@ -81,6 +80,7 @@ async def _test_fetch_venue() -> None:
 
     venue_slug = "home-assignment-venue-helsinki"
     venue = await fetch_venue(venue_slug)
+    assert venue is not None
     assert venue.slug == "home-assignment-venue-helsinki"
     assert venue.location.lat == pytest.approx(60.17012143)
     assert venue.location.lon == pytest.approx(24.92813512)
