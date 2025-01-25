@@ -50,6 +50,10 @@ def test(session: nox.Session) -> None:
     # Generate coverage report
     session.run("coverage", "combine")
     session.run("coverage", "report", "--fail-under=25")
+    if session.interactive:
+        session.run("coverage", "html")
+        report_file = Path.cwd().resolve() / "htmlcov" / "index.html"
+        session.log(f"OPEN IN WEB BROWSER: file://{report_file}")
 
 
 # nox -s server
