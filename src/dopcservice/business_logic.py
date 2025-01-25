@@ -54,8 +54,6 @@ def _test_business_logic_empty_distance_range() -> None:
 
 
 def _test_business_logic() -> None:
-    import pytest
-
     v = Venue(
         slug="pho-viet-helsinki",
         location=GeoLocation(lat=60.16771, lon=24.93664),
@@ -75,7 +73,7 @@ def _test_business_logic() -> None:
     assert delivery_order_price.total_price == Money(2882)
     assert delivery_order_price.small_order_surcharge == Money(0)
     assert delivery_order_price.delivery.fee == Money(1882)
-    assert delivery_order_price.delivery.distance == pytest.approx(5961.3)
+    assert delivery_order_price.delivery.distance == 5961
 
 
 def _test_business_logic_user_too_far() -> None:

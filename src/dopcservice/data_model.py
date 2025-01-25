@@ -30,14 +30,14 @@ class GeoLocation:
         Returns distance in meters.
         >>> loc1 = GeoLocation(59.451949, 24.726974)
         >>> loc2 = GeoLocation(59.438150, 24.750183)
-        >>> round(loc1.get_great_circle_distance(loc2))
+        >>> loc1.get_great_circle_distance(loc2)
         2021
         """
         lat1, lon1, lat2, lon2 = map(radians, [self.lat, self.lon, other.lat, other.lon])
         delta_lat, delta_lon = lat2 - lat1, lon2 - lon1
         # Haversine formula
         a = sin(delta_lat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(delta_lon / 2) ** 2
-        return 2 * self.RADIUS_OF_EARTH * atan2(sqrt(a), sqrt(1 - a))
+        return round(2 * self.RADIUS_OF_EARTH * atan2(sqrt(a), sqrt(1 - a)))
 
     def __post_init__(self) -> None:
         if not isfinite(self.lat) or not isfinite(self.lon):
