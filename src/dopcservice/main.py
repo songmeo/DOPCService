@@ -1,4 +1,7 @@
 import asyncio
+from http.client import HTTPException
+from typing import Dict, Any
+
 import requests
 
 from fastapi import FastAPI
@@ -11,24 +14,38 @@ VENUE_SOURCE_URL = "https://consumer-api.development.dev.woltapi.com/home-assign
 
 
 @app.get("/api/v1/delivery-order-price?venue_slug={venue_slug}&cart_value={cart_value}&user_lat={lat}&user_lon={lon}")
-async def get_delivery_order_price(
-    venue_slug: str, cart_value: int, lat: float, lon: float
-) -> DeliveryOrderPrice | None:
+async def get_delivery_order_price(venue_slug: str, cart_value: int, lat: float, lon: float) -> dict[str, object]:
     venue = await fetch_venue(venue_slug)
-    delivery_order_price = compute_delivery_order_price(
+    if not venue:
+        return {"status": "404", "error": "Invalid venue."}
+    dop = compute_delivery_order_price(
         venue=venue, cart_value=Money(cart_value), user_location=GeoLocation(lat=lat, lon=lon)
     )
-    return delivery_order_price
+    if dop is None:
+        return {"status": "404", "error": "Delivery isn't possible."}
+    return {
+        "total_price": dop.total_price.amount,
+        "small_order_surcharge": dop.small_order_surcharge.amount,
+        "cart_value": dop.cart_value,
+        "delivery": {"fee": dop.delivery.fee, "distance": dop.delivery.distance},
+    }
 
 
-async def fetch_venue(venue_slug: str) -> Venue:
+async def fetch_venue(venue_slug: str) -> Venue | None:
     static_api = f"{VENUE_SOURCE_URL}/{venue_slug}/static"
     dynamic_api = f"{VENUE_SOURCE_URL}/{venue_slug}/dynamic"
 
     loop = asyncio.get_running_loop()  # gain access to the scheduler
 
-    static_venue_raw = (await loop.run_in_executor(None, requests.get, static_api)).json().get("venue_raw")
-    dynamic_venue_raw = (await loop.run_in_executor(None, requests.get, dynamic_api)).json().get("venue_raw")
+    response = await loop.run_in_executor(None, requests.get, static_api)
+    static_venue_raw = response.json().get("venue_raw")
+    if response.status_code != 200 or static_venue_raw is None:
+        return None
+
+    response = await loop.run_in_executor(None, requests.get, dynamic_api)
+    dynamic_venue_raw = response.json().get("venue_raw")
+    if response.status_code != 200 or dynamic_venue_raw is None:
+        return None
 
     coordinates = GeoLocation(
         lon=static_venue_raw["location"]["coordinates"][0],
@@ -51,6 +68,12 @@ async def fetch_venue(venue_slug: str) -> Venue:
         base_price=base_price,
         distance_ranges=distance_ranges,
     )
+
+
+async def _test_fetch_venue_not_found() -> None:
+    venue_slug = "not-found-venue"
+    venue = await fetch_venue(venue_slug)
+    assert venue is None
 
 
 async def _test_fetch_venue() -> None:
