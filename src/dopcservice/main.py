@@ -73,7 +73,7 @@ async def _test_get_delivery_order_price_client_too_far() -> None:
     assert response.json() == {"error": "The user is too far from the venue."}
 
 
-async def fetch_venue_raw(api_url: str) -> Any:
+async def fetch_venue_raw(api_url: str) -> dict[str, Any] | None:
     loop = asyncio.get_running_loop()  # gain access to the scheduler
 
     response = await loop.run_in_executor(None, requests.get, api_url)
