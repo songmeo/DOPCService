@@ -25,8 +25,25 @@ async def get_delivery_order_price(
     return {
         "total_price": dop.total_price.amount,
         "small_order_surcharge": dop.small_order_surcharge.amount,
-        "cart_value": dop.cart_value,
-        "delivery": {"fee": dop.delivery.fee, "distance": dop.delivery.distance},
+        "cart_value": dop.cart_value.amount,
+        "delivery": {"fee": dop.delivery.fee.amount, "distance": dop.delivery.distance},
+    }
+
+
+async def _test_get_delivery_order_price():
+    from fastapi.testclient import TestClient
+
+    client = TestClient(app)
+    response = client.get(
+        "/api/v1/delivery-order-price?venue_slug=home-assignment-venue-helsinki&cart_value=1000"
+        "&user_lat=60.17094&user_lon=24.93087"
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "total_price": 1190,
+        "small_order_surcharge": 0,
+        "cart_value": 1000,
+        "delivery": {"fee": 190, "distance": 177},
     }
 
 
