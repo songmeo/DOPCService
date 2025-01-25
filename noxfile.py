@@ -50,3 +50,10 @@ def test(session: nox.Session) -> None:
     # Generate coverage report
     session.run("coverage", "combine")
     session.run("coverage", "report", "--fail-under=25")
+
+
+# nox -s server
+@nox.session(reuse_venv=True, default=False)
+def server(session: nox.Session) -> None:
+    session.install("-e", ".")
+    session.run("fastapi", "dev", "src/dopcservice/main.py")

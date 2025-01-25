@@ -2,7 +2,7 @@ import asyncio
 import requests
 
 from fastapi import FastAPI
-from .data_model import Venue, GeoLocation, Money, DistanceRange, DeliveryOrderPrice, DeliveryFee
+from .data_model import Venue, GeoLocation, Money, DistanceRange
 from .business_logic import compute_delivery_order_price
 
 app = FastAPI()
@@ -30,7 +30,7 @@ async def get_delivery_order_price(
     }
 
 
-async def _test_get_delivery_order_price():
+async def _test_get_delivery_order_price() -> None:
     from fastapi.testclient import TestClient
 
     client = TestClient(app)
